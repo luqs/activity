@@ -3,7 +3,7 @@ package com.cuize.test.activity.dao;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cuize.activity.dao.mapper.ShopMapper;
+import com.cuize.activity.dao.mapper.ActivityMapper;
 
 /**
  * @author Ralph
@@ -14,7 +14,7 @@ public class ShopMapperTest extends DaoBaseAppTest{
 //	private static final Logger logger = LoggerFactory.getLogger(InsuranceOrderMapperTest.class);
 
 	@Autowired
-	private ShopMapper shopMapper;
+	private ActivityMapper shopMapper;
 	/*
 	@Test
 	public void selectByExample(){
