@@ -1,7 +1,6 @@
 package com.cuize.activity.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cuize.activity.dao.domain.Activity;
 import com.cuize.activity.dao.domain.ActivityAward;
 import com.cuize.activity.dao.domain.ActivityAwardExample;
-import com.cuize.activity.dao.domain.ActivityExample;
 import com.cuize.activity.dao.domain.ActivityUserctl;
 import com.cuize.activity.dao.domain.ActivityUserctlExample;
 import com.cuize.activity.dao.mapper.ActivityAwardMapper;
@@ -37,32 +35,26 @@ public class ValidateDrawService {
 
 	public synchronized ValidateDrawOutDto validateDraw(ValidateDrawInDto indto) {
 		String openid = indto.getOpenid();
-		Integer shopId = indto.getShopId();
+		Integer activityId = indto.getActivityId();
 		ValidateDrawOutDto result=new ValidateDrawOutDto();
 		
 		String today = new SimpleDateFormat("YYYY-MM-dd").format(new Date());
 		
-		ActivityExample activityExample = new ActivityExample();
-		activityExample.createCriteria().andShopIdEqualTo(shopId);
-		List<Activity> acLst = activityMapper.selectByExample(activityExample);
+		Activity ac = activityMapper.selectByPrimaryKey(activityId);
 		
-		if(acLst==null||acLst.size()<=0){
+		if(ac==null){
 			//没有可参加的活动
 			result.setStatus(2);
-			_LOG.info("*******shop Id【"+shopId+"】没有活动*******");
+			_LOG.info("*******activityId【"+activityId+"】没有活动*******");
 		}else{
-			List<Integer> idLst = new ArrayList<Integer>();
-			for(Activity ac : acLst){
-				idLst.add(ac.getId());
-			}
 			ActivityAwardExample awardExample = new ActivityAwardExample();
-			awardExample.createCriteria().andActivityIdIn(idLst).andActivityDateEqualTo(today);
+			awardExample.createCriteria().andActivityIdEqualTo(activityId).andActivityDateEqualTo(today);
 			List<ActivityAward> awardLst = awardMapper.selectByExample(awardExample);
 			
 			if(awardLst==null||awardLst.size()<=0){
 				//当前店铺今天没有活动
 				result.setStatus(2);//没有可参加的活动
-				_LOG.info("*******shop Id【"+shopId+"】在【"+today+"】没有活动*******");
+				_LOG.info("*******activity Id【"+activityId+"】在【"+today+"】没有活动*******");
 			}else{
 				//查看用户是否已经中奖
 				ActivityUserctlExample ctlExample = new ActivityUserctlExample();

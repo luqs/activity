@@ -2,26 +2,25 @@ package com.cuize.activity.service.dto;
 
 import com.cuize.activity.meta.RequireField;
 
-
 public class ValidateDrawInDto {
-		@RequireField
-		private String openid;
-		private Integer shopId;
+	@RequireField
+	private String openid;
+	private Integer activityId;
 
-		public String getOpenid() {
-			return openid;
-		}
+	public String getOpenid() {
+		return openid;
+	}
 
-		public void setOpenid(String openid) {
-			this.openid = openid;
-		}
+	public void setOpenid(String openid) {
+		this.openid = openid;
+	}
 
-		public Integer getShopId() {
-			return shopId;
-		}
+	public Integer getActivityId() {
+		return activityId;
+	}
 
-		public void setShopId(Integer shopId) {
-			this.shopId = shopId;
-		}
+	public void setActivityId(Integer activityId) {
+		this.activityId = activityId;
+	}
 
 }

@@ -213,46 +213,34 @@ public class DrawService {
 			//按照list的size 随机抽取奖项
 			int rom = new Random().nextInt(100);
 			String name = "";
-			if(rom<=1 && rom>=0){
-				name = "清源山";
-			}else if(rom<=3 && rom>=2){
-				name = "九华大佛";
-			}else if(rom<=5 && rom>=4){
-				name = "马仁奇峰";
-			}else if(rom<=7 && rom>=6){
-				name = "九子岩";
-			}else if(rom<=12 && rom>=8){
-				name = "佛珠";
-			}
-			else if(rom<=12 && rom>=8){
-				name = "佛珠";
-			}else if(rom<=100 && rom>=13){
-				name = "祈福带";
+			if(rom==1){
+				name = "瘦西湖";
+			}else if(rom==2){
+				name = "大明寺";
+			}else if(rom<=17 && rom>=3){
+				name = "红包";
+			}else{
+				name="谢谢参与";
 			}
 			ActivityAward finalAward = null;
-			
 			int index = -1;
-			for(int i = 0;i<todayBLst.size();i++){
-				ActivityAward award =todayBLst.get(i);
+			for(int i = 0;i<todayCLst.size();i++){
+				ActivityAward award =todayCLst.get(i);
 				if(award.getAwardName().indexOf(name)>=0){
 					finalAward=award;
 					index=i;
 					break;
 				}
 			}
-			if(finalAward==null){
-				for(int i = 0;i<todayBLst.size();i++){
-					ActivityAward award =todayBLst.get(i);
-					if(award.getAwardName().indexOf("祈福带")>=0){
-						finalAward=award;
-						index =i;
-						break;
-					}
-				}
-			}
 			
 			if(finalAward==null){
-				return null;
+				result.setStatus(0);
+				result.setName("谢谢参与");
+				
+				ActivityUserctl ctl = new ActivityUserctl();
+				ctl.setOpenid(openid);
+				userctlMapper.insert(ctl);
+				return result;
 			}
 			result.setName(finalAward.getAwardName());
 			
@@ -262,14 +250,18 @@ public class DrawService {
 			
 			finalAward.setRemainCount(finalAward.getRemainCount()-1);
 			awardMapper.updateByPrimaryKey(finalAward);
-			todayBLst.set(index, finalAward);
+			todayCLst.set(index, finalAward);
 			if(finalAward.getRemainCount()<=0){
-				todayBLst.remove(index);
+				todayCLst.remove(index);
 			}
 			result.setName(finalAward.getAwardName());
 		}
 		result.setStatus(0);
 		
 		return result;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println("name".indexOf(null));
 	}
 }
