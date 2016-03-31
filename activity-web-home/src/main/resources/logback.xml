@@ -11,9 +11,9 @@
         </filter>  
 	</appender>
 	<appender name="infoFile" class="ch.qos.logback.core.rolling.RollingFileAppender" >  
-		<file>/opt/logs/product/info.log</file><!-- /opt/logs/settle.log -->
+		<file>/opt/logs/activity/info.log</file><!-- /opt/logs/settle.log -->
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>/opt/logs/product/info.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<FileNamePattern>/opt/logs/activity/info.%d{yyyy-MM-dd}.log</FileNamePattern>
 		</rollingPolicy>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter"> 
             <level>info</level> 
@@ -28,7 +28,7 @@
 	<appender name="errorFile" class="ch.qos.logback.core.rolling.RollingFileAppender">  
 		<file>/opt/logs/message/error.log</file><!-- /opt/logs/settle.log -->
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<FileNamePattern>/opt/logs/product/error.%d{yyyy-MM-dd}.log</FileNamePattern>
+			<FileNamePattern>/opt/logs/activity/error.%d{yyyy-MM-dd}.log</FileNamePattern>
 		</rollingPolicy>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter"> 
             <level>ERROR</level>
@@ -39,7 +39,7 @@
 			<charset>UTF-8</charset>
 		</encoder>
 	</appender>
-	<logger name="com.cuize.product.dao.mapper" level="debug" additivity="true"/>
+	<logger name="com.cuize.activity.dao.mapper" level="debug" additivity="true"/>
 	<root level="trace" >
 		<appender-ref ref="infoFile" />
 		<appender-ref ref="errorFile" />

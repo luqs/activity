@@ -32,17 +32,17 @@
 
 	<bean id="orderSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
-		<property name="mapperLocations" value="classpath*:com/cuize/product/dao/mapper/*.xml" />
-		<property name="typeAliasesPackage" value="com.cuize.product.dao.domain" />
+		<property name="mapperLocations" value="classpath*:com/cuize/activity/dao/mapper/*.xml" />
+		<property name="typeAliasesPackage" value="com.cuize.activity.dao.domain" />
 		<property name="configLocation" value="classpath:mybatis-config.xml"/>
 		<property name="plugins">  
-        	<bean class="com.cuize.product.dao.domain.PaginationInterceptor">  
+        	<bean class="com.cuize.activity.dao.domain.PaginationInterceptor">  
        		</bean>  
     	</property>  
 	</bean>
 	
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" id="orderMapperScanner">
-		<property name="basePackage" value="com.cuize.product.dao.mapper" />
+		<property name="basePackage" value="com.cuize.activity.dao.mapper" />
 		<property name="sqlSessionFactoryBeanName" value="orderSqlSessionFactory"/> 
 	</bean>
 	
@@ -52,5 +52,5 @@
 	</bean>
 	
 	<context:property-placeholder location="classpath*:/conf/base.properties" properties-ref="extConf" local-override="true" />
-	<util:properties id="extConf" location="file:/opt/conf/product/base.properties" ignore-resource-not-found="true"/>
+	<util:properties id="extConf" location="file:/opt/conf/activity/base.properties" ignore-resource-not-found="true"/>
 </beans>
