@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	    http://www.springframework.org/schema/beans/spring-beans.xsd
+	    http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd 
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd 
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<!-- 
+	<bean id="loggerFilter" name="loggerFilter" class="cn.demo.utils.LoggerMDCFilter" />
+ 	-->
+ 	<context:component-scan base-package="com.cuize.product.service" use-default-filters="false" annotation-config="false">
+		<context:include-filter type="regex" expression=".*Stub.*Repository" />
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+	</context:component-scan>
+	
+	<task:executor id="asyncExecutor" pool-size="10"  />  
+	<task:annotation-driven executor="asyncExecutor"/>  
+	
+	<!-- 
+	<task:annotation-driven proxy-target-class="true" />
+	
+	<bean id="asynchronousTaskRunner" class="cn.demo.module.task.AsynchronousTaskRunner" />
+	<task:executor id="asynchronousTaskExecutor" pool-size="4-128" queue-capacity="256" />
+
+	<task:scheduler id="asynchronousTaskScheduler"/>
+	<task:scheduled-tasks scheduler="asynchronousTaskScheduler">
+		<task:scheduled ref="asynchronousTaskRunner" method="run" fixed-rate="2000" initial-delay="10000" />
+	</task:scheduled-tasks>
+	 -->
+	<!-- 
+	<import resource="classpath*:/conf/spring-redis.xml" />
+	<import resource="classpath*:/conf/spring-amqp.xml" />
+	<import resource="classpath*:/conf/spring-persist.xml" />
+	<import resource="classpath*:/conf/spring-security.xml" />
+	-->
+	
+</beans>
