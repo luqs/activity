@@ -217,7 +217,7 @@ public class DrawService {
 				name = "瘦西湖";
 			}else if(rom==2){
 				name = "大明寺";
-			}else if(rom<=17 && rom>=3){
+			}else if(rom<=20 && rom>=3){
 				name = "红包";
 			}else{
 				name="谢谢参与";
@@ -262,6 +262,23 @@ public class DrawService {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("name".indexOf(null));
+		int m=0;
+		int j=0;
+		int k=0;
+		int y=0;
+		for(int i=0;i<100;i++){
+			int c =new Random().nextInt(100);
+			if(c==1){
+				m++;
+			}else if(c==2){
+				j++;
+			}else if(c<=27 && c>=3){
+				k++;
+			}else{
+				y++;
+			}
+		}
+		System.out.println(""+m+","+j+","+k+","+y);
+		
 	}
 }
