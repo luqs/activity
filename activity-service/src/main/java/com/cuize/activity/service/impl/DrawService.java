@@ -61,7 +61,7 @@ public class DrawService {
 			ActivityAwardExample example1 = new ActivityAwardExample();
 			example1.createCriteria()
 				.andActivityDateEqualTo(today)
-				.andActivityIdEqualTo(id)
+				.andActivityIdEqualTo(1)
 				.andRemainCountGreaterThan(0);
 			todayALst= awardMapper.selectByExample(example1) ;
 			dateA=today;
@@ -71,7 +71,7 @@ public class DrawService {
 			ActivityAwardExample example2 = new ActivityAwardExample();
 			example2.createCriteria()
 				.andActivityDateEqualTo(today)
-				.andActivityIdEqualTo(id)
+				.andActivityIdEqualTo(2)
 				.andRemainCountGreaterThan(0);
 			todayBLst = awardMapper.selectByExample(example2) ;
 			dateB = today;
@@ -81,7 +81,7 @@ public class DrawService {
 			ActivityAwardExample example3 = new ActivityAwardExample();
 			example3.createCriteria()
 				.andActivityDateEqualTo(today)
-				.andActivityIdEqualTo(id)
+				.andActivityIdEqualTo(3)
 				.andRemainCountGreaterThan(0);
 			todayCLst = awardMapper.selectByExample(example3) ;
 			dateC = today;
