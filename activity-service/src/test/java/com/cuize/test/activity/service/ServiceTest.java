@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cuize.activity.service.dto.ValidateDrawInDto;
-import com.cuize.activity.service.impl.ValidateDrawService;
+import com.cuize.activity.service.dto.DrawInDto;
+import com.cuize.activity.service.impl.DrawService;
 
 /**
  * @author xyz(Auto-generated)
@@ -21,14 +21,15 @@ public class ServiceTest extends BaseServiceTest {
 	private static final Logger logger = LoggerFactory.getLogger(ServiceTest.class);
 
 	@Autowired
-	private ValidateDrawService queryTicketListService;
+	private DrawService service;
 	
 	@Test
 	public void countByParams() throws Exception {
-		ValidateDrawInDto inDto = new ValidateDrawInDto();
+		DrawInDto inDto = new DrawInDto();
 		inDto.setOpenid("");
+		inDto.setActivityCode("");
 		
-		logger.info("******"+queryTicketListService.validateDraw(inDto));
+		logger.info("******"+service.activityDraw(inDto));
 	}
 
 }

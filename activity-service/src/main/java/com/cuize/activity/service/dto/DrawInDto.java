@@ -5,16 +5,16 @@ import com.cuize.activity.meta.RequireField;
 
 public class DrawInDto {
 		@RequireField
-		private Integer id;
+		private String activityCode;
 		@RequireField
 		private String openid;
 
-		public Integer getId() {
-			return id;
+		public String getActivityCode() {
+			return activityCode;
 		}
 
-		public void setId(Integer id) {
-			this.id = id;
+		public void setActivityCode(String activityCode) {
+			this.activityCode = activityCode;
 		}
 
 		public String getOpenid() {

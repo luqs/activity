@@ -1,10 +1,10 @@
 package com.cuize.activity.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +25,8 @@ import com.cuize.activity.service.dto.DrawOutDto;
 @Transactional(rollbackFor=Exception.class)
 public class DrawService {
 	private static final Logger _LOG = LoggerFactory.getLogger(DrawService.class);
-	private static String dateA="";
-	private static String dateB="";
-	private static String dateC="";
 	
-	private static List<ActivityAward> todayALst = new ArrayList<ActivityAward>();
-	private static List<ActivityAward> todayBLst = new ArrayList<ActivityAward>();
-	private static List<ActivityAward> todayCLst = new ArrayList<ActivityAward>();
+	private static ConcurrentHashMap<String,List<ActivityAward>> todayWard = new ConcurrentHashMap<String,List<ActivityAward>>();
 	
 	@Autowired 
 	private ActivityAwardMapper awardMapper;
@@ -41,7 +36,7 @@ public class DrawService {
 	public synchronized DrawOutDto activityDraw(DrawInDto indto) {
 		String today = new SimpleDateFormat("YYYY-MM-dd").format(new Date());
 		String openid = indto.getOpenid();
-		Integer id = indto.getId();
+		String activityCode = indto.getActivityCode();
 		DrawOutDto result=new DrawOutDto();
 		
 		
@@ -51,234 +46,58 @@ public class DrawService {
 		List<ActivityUserctl>  rewardLst = userctlMapper.selectByExample(ctlExample);
 		//如果已经中奖，状态设置为1 并返回
 		if(rewardLst!=null && rewardLst.size()!=0){
-			_LOG.info("*******用户openid【"+openid+"】 已经存在中奖记录*******");
+			_LOG.info("*******用户openid【"+openid+"】 已中奖*******");
 			result.setStatus(1);
 			return result;
 		}
 		
+		String key=activityCode+"-"+today;
 		//将当日剩余数量大于的的奖品初始化到list中
-		if(!dateA.equals(today)||todayALst.size()<=0){
+		if(todayWard.get(key)==null ||todayWard.get(key).size()<=0){
 			ActivityAwardExample example1 = new ActivityAwardExample();
 			example1.createCriteria()
 				.andActivityDateEqualTo(today)
-				.andActivityIdEqualTo(1)
+				.andActivityCodeEqualTo(activityCode)
 				.andRemainCountGreaterThan(0);
-			todayALst= awardMapper.selectByExample(example1) ;
-			dateA=today;
-			_LOG.info("*******today  ALst初始化*******"+todayALst.size());
-		}
-		if(!dateB.equals(today)||todayBLst.size()<=0){
-			ActivityAwardExample example2 = new ActivityAwardExample();
-			example2.createCriteria()
-				.andActivityDateEqualTo(today)
-				.andActivityIdEqualTo(2)
-				.andRemainCountGreaterThan(0);
-			todayBLst = awardMapper.selectByExample(example2) ;
-			dateB = today;
-			_LOG.info("*******today  BLst初始化*******"+todayBLst.size());
-		}	
-		if(!dateC.equals(today)||todayCLst.size()<=0){
-			ActivityAwardExample example3 = new ActivityAwardExample();
-			example3.createCriteria()
-				.andActivityDateEqualTo(today)
-				.andActivityIdEqualTo(3)
-				.andRemainCountGreaterThan(0);
-			todayCLst = awardMapper.selectByExample(example3) ;
-			dateC = today;
-			_LOG.info("*******today  CLst初始化*******"+todayCLst.size());
+			List<ActivityAward> aaList= awardMapper.selectByExample(example1) ;
+			todayWard.put(key, aaList);
+			_LOG.info("*******key 【"+key+"】初始化长度*******"+(aaList==null?0:aaList.size()));
 		}
 		
-		
-		if(1==id){
-			//0-1清源山  2-3九华山  4-5马仁奇峰   6-7九子岩 8-100祈福带
-			//按照list的size 随机抽取奖项
-			int rom = new Random().nextInt(100);
-			String name = "";
-			if(rom<=1 && rom>=0){
-				name = "清源山";
-			}else if(rom<=3 && rom>=2){
-				name = "九华大佛";
-			}else if(rom<=5 && rom>=4){
-				name = "马仁奇峰";
-			}else if(rom<=7 && rom>=6){
-				name = "九子岩";
-			}else if(rom<=100 && rom>=8){
-				name = "祈福带";
-			}
-			ActivityAward finalAward = null;
-			int index = -1;
-			for(int i = 0;i<todayALst.size();i++){
-				ActivityAward award =todayALst.get(i);
-				if(award.getAwardName().indexOf(name)>=0){
-					finalAward=award;
-					index=i;
-					break;
+		List<ActivityAward> awardList = todayWard.get(key);
+		//5清源山 11九华山  8马仁奇峰   10九子岩  66祈福带
+		int rom = new Random().nextInt(100);
+		_LOG.info("*******rom*******"+rom);
+		int min=0;int max=0;
+		//遍历当前活动所有奖品的概率（百分数）
+		for(int i=0;i<awardList.size();i++){
+			ActivityAward a = awardList.get(i);
+			min=max;
+			max=max+a.getProbability().intValue();
+			_LOG.info("*******min**max*****"+min+"---"+max);
+			//如果随机数落在第i个区间，就中i奖
+			if(min<=rom&&rom<max){
+				result.setAwardCode(a.getAwardCode());
+				if(a.getRemainCount()<=0){
+					result.setCount(0);
+				}else{
+					//记录用户已经中奖
+//					ActivityUserctl ctl = new ActivityUserctl();
+//					ctl.setOpenid(openid);
+//					userctlMapper.insert(ctl);
+					
+					//将数据库剩余数量减一
+					a.setRemainCount(a.getRemainCount()-1);
+					awardMapper.updateByPrimaryKey(a);
+					//维护list里面的对应元素：剩余数量减一、删除当日剩余数量为0 的奖项
+					todayWard.get(key).set(i, a);
+					result.setCount(1);
 				}
+				break;
 			}
-			if(finalAward==null){
-				for(int i = 0;i<todayALst.size();i++){
-					ActivityAward award =todayALst.get(i);
-					if(award.getAwardName().indexOf("祈福带")>=0){
-						finalAward=award;
-						index =i;
-						break;
-					}
-				}
-			}
-			
-			if(finalAward==null){
-				return null;
-			}
-			
-			result.setName(finalAward.getAwardName());
-			
-			//记录用户已经中奖
-			ActivityUserctl ctl = new ActivityUserctl();
-			ctl.setOpenid(openid);
-			userctlMapper.insert(ctl);
-			
-			//将数据库剩余数量减一
-			finalAward.setRemainCount(finalAward.getRemainCount()-1);
-			awardMapper.updateByPrimaryKey(finalAward);
-			//维护list里面的对应元素：剩余数量减一、删除当日剩余数量为0 的奖项
-			todayALst.set(index, finalAward);
-			if(finalAward.getRemainCount()<=0){
-				todayALst.remove(index);
-			}
-			result.setName(finalAward.getAwardName());
-
-		}else if(2==id){
-			
-			//0-1清源山  2-3九华山  4-5马仁奇峰   6-7九子岩 8-100祈福带
-			//按照list的size 随机抽取奖项
-			int rom = new Random().nextInt(100);
-			String name = "";
-			if(rom<=1 && rom>=0){
-				name = "清源山";
-			}else if(rom<=3 && rom>=2){
-				name = "九华大佛";
-			}else if(rom<=5 && rom>=4){
-				name = "马仁奇峰";
-			}else if(rom<=7 && rom>=6){
-				name = "九子岩";
-			}else if(rom<=12 && rom>=8){
-				name = "佛珠";
-			}
-			else if(rom<=12 && rom>=8){
-				name = "佛珠";
-			}else if(rom<=100 && rom>=13){
-				name = "祈福带";
-			}
-			ActivityAward finalAward = null;
-			
-			int index = -1;
-			for(int i = 0;i<todayBLst.size();i++){
-				ActivityAward award =todayBLst.get(i);
-				if(award.getAwardName().indexOf(name)>=0){
-					finalAward=award;
-					index=i;
-					break;
-				}
-			}
-			if(finalAward==null){
-				for(int i = 0;i<todayBLst.size();i++){
-					ActivityAward award =todayBLst.get(i);
-					if(award.getAwardName().indexOf("祈福带")>=0){
-						finalAward=award;
-						index =i;
-						break;
-					}
-				}
-			}
-			
-			if(finalAward==null){
-				return null;
-			}
-			result.setName(finalAward.getAwardName());
-			
-			ActivityUserctl ctl = new ActivityUserctl();
-			ctl.setOpenid(openid);
-			userctlMapper.insert(ctl);
-			
-			finalAward.setRemainCount(finalAward.getRemainCount()-1);
-			awardMapper.updateByPrimaryKey(finalAward);
-			todayBLst.set(index, finalAward);
-			if(finalAward.getRemainCount()<=0){
-				todayBLst.remove(index);
-			}
-			result.setName(finalAward.getAwardName());
-		}else if(3==id){
-			
-			//0-1清源山  2-3九华山  4-5马仁奇峰   6-7九子岩 8-100祈福带
-			//按照list的size 随机抽取奖项
-			int rom = new Random().nextInt(100);
-			String name = "";
-			if(rom==1){
-				name = "瘦西湖";
-			}else if(rom==2){
-				name = "大明寺";
-			}else if(rom<=20 && rom>=3){
-				name = "红包";
-			}else{
-				name="谢谢参与";
-			}
-			ActivityAward finalAward = null;
-			int index = -1;
-			for(int i = 0;i<todayCLst.size();i++){
-				ActivityAward award =todayCLst.get(i);
-				if(award.getAwardName().indexOf(name)>=0){
-					finalAward=award;
-					index=i;
-					break;
-				}
-			}
-			
-			if(finalAward==null){
-				result.setStatus(0);
-				result.setName("谢谢参与");
-				
-				ActivityUserctl ctl = new ActivityUserctl();
-				ctl.setOpenid(openid);
-				userctlMapper.insert(ctl);
-				return result;
-			}
-			result.setName(finalAward.getAwardName());
-			
-			ActivityUserctl ctl = new ActivityUserctl();
-			ctl.setOpenid(openid);
-			userctlMapper.insert(ctl);
-			
-			finalAward.setRemainCount(finalAward.getRemainCount()-1);
-			awardMapper.updateByPrimaryKey(finalAward);
-			todayCLst.set(index, finalAward);
-			if(finalAward.getRemainCount()<=0){
-				todayCLst.remove(index);
-			}
-			result.setName(finalAward.getAwardName());
 		}
 		result.setStatus(0);
-		
+		_LOG.info("*******result*******"+result.getAwardCode());
 		return result;
-	}
-	
-	public static void main(String[] args) {
-		int m=0;
-		int j=0;
-		int k=0;
-		int y=0;
-		for(int i=0;i<100;i++){
-			int c =new Random().nextInt(100);
-			if(c==1){
-				m++;
-			}else if(c==2){
-				j++;
-			}else if(c<=27 && c>=3){
-				k++;
-			}else{
-				y++;
-			}
-		}
-		System.out.println(""+m+","+j+","+k+","+y);
-		
 	}
 }

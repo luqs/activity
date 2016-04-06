@@ -5,7 +5,7 @@ import com.cuize.activity.meta.RequireField;
 public class ValidateDrawInDto {
 	@RequireField
 	private String openid;
-	private Integer activityId;
+	private String activityCode;
 
 	public String getOpenid() {
 		return openid;
@@ -15,12 +15,12 @@ public class ValidateDrawInDto {
 		this.openid = openid;
 	}
 
-	public Integer getActivityId() {
-		return activityId;
+	public String getActivityCode() {
+		return activityCode;
 	}
 
-	public void setActivityId(Integer activityId) {
-		this.activityId = activityId;
+	public void setActivityCode(String activityCode) {
+		this.activityCode = activityCode;
 	}
 
 }
