@@ -65,6 +65,10 @@ public class DrawService {
 		}
 		
 		List<ActivityAward> awardList = todayWard.get(key);
+		if(awardList==null||awardList.size()<=0){
+			result.setStatus(2);
+			return result;
+		}
 		//5清源山 11九华山  8马仁奇峰   10九子岩  66祈福带
 		int rom = new Random().nextInt(100);
 		_LOG.info("*******rom*******"+rom);
@@ -82,9 +86,9 @@ public class DrawService {
 					result.setCount(0);
 				}else{
 					//记录用户已经中奖
-//					ActivityUserctl ctl = new ActivityUserctl();
-//					ctl.setOpenid(openid);
-//					userctlMapper.insert(ctl);
+					ActivityUserctl ctl = new ActivityUserctl();
+					ctl.setOpenid(openid);
+					userctlMapper.insert(ctl);
 					
 					//将数据库剩余数量减一
 					a.setRemainCount(a.getRemainCount()-1);

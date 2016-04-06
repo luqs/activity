@@ -27,7 +27,7 @@ public class ServiceTest extends BaseServiceTest {
 	public void countByParams() throws Exception {
 		DrawInDto inDto = new DrawInDto();
 		inDto.setOpenid("");
-		inDto.setActivityCode("");
+		inDto.setActivityCode("AC1001");
 		
 		logger.info("******"+service.activityDraw(inDto));
 	}
