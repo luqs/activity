@@ -88,6 +88,9 @@ public class DrawService {
 					//记录用户已经中奖
 					ActivityUserctl ctl = new ActivityUserctl();
 					ctl.setOpenid(openid);
+					ctl.setActivityCode(activityCode);
+					ctl.setAwardCode(a.getAwardCode());
+					ctl.setCreateTime(new Date());
 					userctlMapper.insert(ctl);
 					
 					//将数据库剩余数量减一
