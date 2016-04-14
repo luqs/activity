@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cuize.activity.dao.domain.ActivityUserctl;
 import com.cuize.activity.dao.domain.ActivityUserctlExample;
 import com.cuize.activity.dao.domain.Award;
-import com.cuize.activity.dao.mapper.ActivityMapper;
 import com.cuize.activity.dao.mapper.ActivityUserctlMapper;
 import com.cuize.activity.dao.mapper.AwardMapper;
 import com.cuize.activity.service.dto.ValidateDrawInDto;
@@ -24,8 +23,6 @@ import com.cuize.activity.service.dto.ValidateDrawOutDto;
 public class ValidateDrawService {
 	private static final Logger _LOG = LoggerFactory.getLogger(ValidateDrawService.class);
 	
-	@Autowired 
-	private ActivityMapper activityMapper;
 	@Autowired 
 	private AwardMapper awardMapper;
 	@Autowired 
