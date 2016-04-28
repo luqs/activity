@@ -2,7 +2,7 @@ package com.cuize.activity.service.dto;
 
 import java.util.List;
 
-import com.cuize.activity.dao.domain.Award;
+import com.cuize.commons.dao.activity.domain.Award;
 
 
 public class ValidateDrawOutDto{

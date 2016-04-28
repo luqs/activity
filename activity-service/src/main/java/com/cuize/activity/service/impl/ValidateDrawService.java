@@ -10,16 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cuize.activity.dao.domain.ActivityUserctl;
-import com.cuize.activity.dao.domain.ActivityUserctlExample;
-import com.cuize.activity.dao.domain.Award;
-import com.cuize.activity.dao.mapper.ActivityUserctlMapper;
-import com.cuize.activity.dao.mapper.AwardMapper;
 import com.cuize.activity.service.dto.ValidateDrawInDto;
 import com.cuize.activity.service.dto.ValidateDrawOutDto;
+import com.cuize.commons.dao.activity.domain.ActivityUserctl;
+import com.cuize.commons.dao.activity.domain.ActivityUserctlExample;
+import com.cuize.commons.dao.activity.domain.Award;
+import com.cuize.commons.dao.activity.mapper.ActivityUserctlMapper;
+import com.cuize.commons.dao.activity.mapper.AwardMapper;
 
 @Service
-@Transactional(rollbackFor=Exception.class)
+@Transactional(value="activityTransactionManager",rollbackFor=Exception.class)
 public class ValidateDrawService {
 	private static final Logger _LOG = LoggerFactory.getLogger(ValidateDrawService.class);
 	

@@ -12,17 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cuize.activity.dao.domain.ActivityAward;
-import com.cuize.activity.dao.domain.ActivityAwardExample;
-import com.cuize.activity.dao.domain.ActivityUserctl;
-import com.cuize.activity.dao.domain.ActivityUserctlExample;
-import com.cuize.activity.dao.mapper.ActivityAwardMapper;
-import com.cuize.activity.dao.mapper.ActivityUserctlMapper;
 import com.cuize.activity.service.dto.DrawInDto;
 import com.cuize.activity.service.dto.DrawOutDto;
+import com.cuize.commons.dao.activity.domain.ActivityAward;
+import com.cuize.commons.dao.activity.domain.ActivityAwardExample;
+import com.cuize.commons.dao.activity.domain.ActivityUserctl;
+import com.cuize.commons.dao.activity.domain.ActivityUserctlExample;
+import com.cuize.commons.dao.activity.mapper.ActivityAwardMapper;
+import com.cuize.commons.dao.activity.mapper.ActivityUserctlMapper;
 
 @Service
-@Transactional(rollbackFor=Exception.class)
+@Transactional(value="activityTransactionManager",rollbackFor=Exception.class)
 public class DrawService {
 	private static final Logger _LOG = LoggerFactory.getLogger(DrawService.class);
 	

@@ -20,14 +20,6 @@
 
 		<dependency>
 			<groupId>com.cuize.activity</groupId>
-			<artifactId>activity-dao</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.cuize.activity</groupId>
-			<artifactId>activity-utils</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.cuize.activity</groupId>
 			<artifactId>activity-service</artifactId>
 		</dependency>
 

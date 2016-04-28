@@ -1,6 +1,6 @@
 package com.cuize.activity.service.dto;
 
-import com.cuize.activity.meta.RequireField;
+import com.cuize.commons.meta.RequireField;
 
 public class ValidateDrawInDto {
 	@RequireField

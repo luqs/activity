@@ -11,10 +11,12 @@
 	<url>http://maven.apache.org</url>
 
 	<modules>
-		<module>activity-dao</module>
-		<module>activity-utils</module>
+		
+		
 		<module>activity-service</module>
 		<module>activity-web-home</module>
+		<module>../commons/commons-dao-activity</module>
+		<module>../commons/commons-utils</module>
 	</modules>
 
 	<properties>
