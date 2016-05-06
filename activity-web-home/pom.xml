@@ -21,6 +21,7 @@
 		<dependency>
 			<groupId>com.cuize.activity</groupId>
 			<artifactId>activity-service</artifactId>
+			<version>0.0.1</version>
 		</dependency>
 
 	</dependencies>
