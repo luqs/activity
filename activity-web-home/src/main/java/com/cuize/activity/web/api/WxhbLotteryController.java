@@ -317,7 +317,7 @@ public class WxhbLotteryController {
 	@RequestMapping(value = "/test-page", method = RequestMethod.GET)
     public ModelAndView getregister(ModelAndView model, Integer reqeustPage, Integer pageSize, Integer usertype)
     {
-		model.setViewName("forward:/pages/index.jsp");
+		model.setViewName("forward:/pages/wxhb/lottery.jsp");
 		return model;
     }
 	
