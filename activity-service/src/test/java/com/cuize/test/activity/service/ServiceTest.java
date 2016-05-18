@@ -20,16 +20,16 @@ public class ServiceTest extends BaseServiceTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ServiceTest.class);
 
-	@Autowired
-	private DrawService service;
+	/*@Autowired
+	private DrawService service;*/
 	
 	@Test
 	public void countByParams() throws Exception {
-		DrawInDto inDto = new DrawInDto();
+		/*DrawInDto inDto = new DrawInDto();
 		inDto.setOpenid("");
 		inDto.setActivityCode("AC1001");
 		
-		logger.info("******"+service.activityDraw(inDto));
+		logger.info("******"+service.activityDraw(inDto));*/
 	}
 
 }

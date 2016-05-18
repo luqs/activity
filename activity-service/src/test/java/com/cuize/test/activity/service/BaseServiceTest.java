@@ -1,5 +1,6 @@
 package com.cuize.test.activity.service;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.springframework.test.context.ActiveProfiles;
@@ -8,11 +9,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @ActiveProfiles(value="sit")
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/spring-context-service.xml","classpath*:/spring-datasource.xml"})
+@ContextConfiguration(locations = {"classpath*:/spring-context-service.xml","classpath*:/spring-datasource-activity.xml"})
 public class BaseServiceTest {
 
 	// private static ApplicationContext context = new ClassPathXmlApplicationContext("classpath:/spring-context.xml");
 	// private static UserInfoService userService = (UserInfoService) context.getBean("userInfoService");
 	Logger logger = org.slf4j.LoggerFactory.getLogger(BaseServiceTest.class);
 
+	@Test
+	public void test1(){
+		
+	}
 }

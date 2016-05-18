@@ -6,9 +6,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@ActiveProfiles("dev")
+/*@ActiveProfiles("dev")
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/spring-context.xml")
+@ContextConfiguration(locations = "classpath:/spring-context.xml")*/
 public class BaseAppTest {
 
 	// private static ApplicationContext context = new ClassPathXmlApplicationContext("classpath:/spring-context.xml");
