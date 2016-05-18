@@ -18,8 +18,21 @@
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
 	</context:component-scan>
 	
+	<!-- 扫描定时任务 -->
+	<context:component-scan base-package="com.cuize.activity.web.task"></context:component-scan>
+	
 	<task:executor id="asyncExecutor" pool-size="10"  />  
 	<task:annotation-driven executor="asyncExecutor"/>  
+	
+	<!-- 启动后自动执行initial-delay="3000"  启动后延迟3秒后开始首次触发 -->
+<!-- 	<task:scheduled-tasks>
+		<task:scheduled initial-delay="3000" ref="accessTokenTask" method="refresh"/>
+	</task:scheduled-tasks> -->
+	
+	
+	
+	<context:property-placeholder location="classpath*:/conf/base.properties" ignore-unresolvable="true" properties-ref="extConf" local-override="true" />
+	<util:properties id="extConf" location="file:/opt/conf/activity/base.properties" ignore-resource-not-found="true"/>
 	
 	<!-- 
 	<task:annotation-driven proxy-target-class="true" />

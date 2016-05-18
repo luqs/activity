@@ -34,6 +34,10 @@ public class GatewayController {
 	static {
 		methodProviderMap.put("activity.ticket.validateDraw", "/validateDraw");
 		methodProviderMap.put("activity.ticket.draw", "/draw");
+		methodProviderMap.put("activity.wxhb.preorder.add", "/wxhb/preorder/add");
+		methodProviderMap.put("activity.wxhb.lottery.add", "/wxhb/lottery/add");
+		methodProviderMap.put("activity.wxhb.lottery.set-prize-bucket", "/wxhb/lottery/set-prize-bucket");
+		methodProviderMap.put("activity.wxhb.lottery.set-lottery-switch", "/wxhb/lottery/set-lottery-switch");
 	}
 
 	@RequestMapping(value = "gateway", method = RequestMethod.POST)
