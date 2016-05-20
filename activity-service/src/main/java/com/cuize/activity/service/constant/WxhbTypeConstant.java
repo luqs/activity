@@ -12,7 +12,7 @@ public enum WxhbTypeConstant {
 
 	NORMAL("NORMAL","普通红包"),
 	GROUP("GROUP","裂变红包");
-	
+
 	private String typeName;
 	 
 	private String typeDesc;
