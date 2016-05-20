@@ -171,19 +171,6 @@
 			<version>${hibernate.validator-version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>${jedis-version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.kstyrc</groupId>
-			<artifactId>embedded-redis</artifactId>
-			<version>0.6</version>
-		</dependency>
-
 		<!-- LOGGING start -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -383,8 +370,6 @@
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
 					<encoding>${project.build.sourceEncoding}</encoding>
-					<docencoding>${project.reporting.outputEncoding}</docencoding>
-					<charset>${project.reporting.outputEncoding}</charset>
 				</configuration>
 			</plugin>
 			<plugin>
