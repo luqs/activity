@@ -3,8 +3,6 @@ package com.cuize.activity.web.api;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.minidev.json.JSONObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +18,10 @@ import com.cuize.activity.service.dto.CommonInDto;
 import com.cuize.activity.service.dto.DrawInDto;
 import com.cuize.activity.service.dto.DrawOutDto;
 import com.cuize.activity.service.impl.DrawService;
-import com.cuize.activity.web.helper.JosnRPCBizHelper;
+import com.cuize.commons.meta.JosnRPCBizHelper;
 import com.thetransactioncompany.jsonrpc2.JSONRPC2Response;
+
+import net.minidev.json.JSONObject;
 
 /**
  * 产品库存入库接口
