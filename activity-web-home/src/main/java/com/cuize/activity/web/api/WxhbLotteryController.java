@@ -1,5 +1,6 @@
 package com.cuize.activity.web.api;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -29,13 +30,18 @@ import com.alibaba.fastjson.TypeReference;
 import com.cuize.activity.service.dto.CommonInDto;
 import com.cuize.activity.service.dto.GlobalConfig;
 import com.cuize.activity.service.dto.common.CommonOutDto;
+import com.cuize.activity.service.dto.common.PageResult;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotteryAddInDto;
+import com.cuize.activity.service.dto.wxlottery.WxhbLotteryBindTicketInDto;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotteryDetailQueryOutDto;
+import com.cuize.activity.service.dto.wxlottery.WxhbLotteryQueryByPageInDto;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotterySetPrizeBucketInDto;
+import com.cuize.activity.service.dto.wxlottery.WxhbLotteryUnBindTicketInDto;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotteryUpdateSwitchInDto;
 import com.cuize.activity.service.impl.WxhbLotteryService;
 import com.cuize.activity.service.impl.WxhbPreorderService;
 import com.cuize.activity.web.helper.JosnRPCBizHelper;
+import com.cuize.activity.web.util.HttpRequestJsonPrameterUtil;
 import com.cuize.activity.web.util.WeiXinOAuthUtil;
 import com.cuize.activity.web.util.oauth.Configuration;
 import com.cuize.activity.web.util.oauth.OAuthTokenUtil;
@@ -46,6 +52,9 @@ import com.cuize.activity.web.vo.lottery.WxhbQueryLotteryByPageReq;
 import com.cuize.activity.web.vo.lottery.WxhbQueryLotteryListReq;
 import com.cuize.activity.web.vo.lottery.WxhbSetLotterySwitchReq;
 import com.cuize.activity.web.vo.lottery.WxhbSetPrizeBucketReq;
+import com.cuize.commons.dao.activity.domain.WxhbLottery;
+import com.cuize.commons.dao.activity.resultvo.WxhbLotteryBindTicketVO;
+import com.cuize.commons.dao.activity.resultvo.WxhbLotteryUnbindTicketVO;
 import com.cuize.commons.utils.WXPayUtil;
 
 
@@ -91,16 +100,15 @@ public class WxhbLotteryController {
 	@ResponseBody
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public JSONObject wxhbAddLottery(Object obj, Model model,
-			HttpServletRequest request, HttpServletResponse response)
+			HttpServletRequest request, HttpServletResponse response, WxhbLotteryAddReq req)
 			throws Exception {
 		LOG.info("########################### BEGIN INVOKE WxhbLotteryController.wxhbAddLottery ###########################");
-		CommonInDto<WxhbLotteryAddReq> lotteryAddReq = JSON.parseObject(
-				JosnRPCBizHelper.getForwardData(request).toJSONString(),
-				new TypeReference<CommonInDto<WxhbLotteryAddReq>>(){});
+		LOG.info("****** req={}", JSON.toJSONString(req));
+		CommonOutDto commonOutDto = new CommonOutDto();
 		WxhbLotteryAddInDto inDto = new WxhbLotteryAddInDto();
-		BeanUtils.copyProperties(lotteryAddReq.getParams(), inDto);
+		BeanUtils.copyProperties(req, inDto);
 		inDto.setAccessToken(OAuthTokenUtil.access_token);
-		CommonOutDto commonOutDto = wxhbLotteryService.createWxhbLottery(inDto);
+		commonOutDto = wxhbLotteryService.createWxhbLottery(inDto);
 		
 		LOG.info("****** ResponseBody={}", JSON.toJSONString(commonOutDto));
 		LOG.info("########################### END INVOKE WxhbLotteryController.wxhbAddLottery ###########################\n\n");
@@ -122,13 +130,16 @@ public class WxhbLotteryController {
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		LOG.info("########################### BEGIN INVOKE WxhbLotteryController.wxhbSetPrizeBucket ###########################");
-		CommonInDto<WxhbSetPrizeBucketReq> setPrizeBucketReq = JSON.parseObject(
-				JosnRPCBizHelper.getForwardData(request).toJSONString(),
-				new TypeReference<CommonInDto<WxhbSetPrizeBucketReq>>(){});
-		WxhbLotterySetPrizeBucketInDto inDto = new WxhbLotterySetPrizeBucketInDto();
-		BeanUtils.copyProperties(setPrizeBucketReq.getParams(), inDto);
-		inDto.setAccessToken(OAuthTokenUtil.access_token);
-		CommonOutDto commonOutDto = wxhbLotteryService.setWxhbLotteryPrizeBucket(inDto);
+		final String jsonData = HttpRequestJsonPrameterUtil.getRestData(request);
+		LOG.info("****** req={}", jsonData);
+		CommonOutDto commonOutDto = new CommonOutDto();
+		if (jsonData != null) {
+			WxhbSetPrizeBucketReq req = JSON.parseObject(jsonData, WxhbSetPrizeBucketReq.class);
+			WxhbLotterySetPrizeBucketInDto inDto = new WxhbLotterySetPrizeBucketInDto();
+			BeanUtils.copyProperties(req, inDto);
+			inDto.setAccessToken(OAuthTokenUtil.access_token);
+		    commonOutDto = wxhbLotteryService.setWxhbLotteryPrizeBucket(inDto);
+		}
 		
 		LOG.info("****** ResponseBody={}", JSON.toJSONString(commonOutDto));
 		LOG.info("########################### END INVOKE WxhbLotteryController.wxhbSetPrizeBucket ###########################\n\n");
@@ -150,13 +161,16 @@ public class WxhbLotteryController {
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		LOG.info("########################### BEGIN INVOKE WxhbLotteryController.wxhbSetLotterySwitch ###########################");
-		CommonInDto<WxhbSetLotterySwitchReq> setLotterySwitchReq = JSON.parseObject(
-				JosnRPCBizHelper.getForwardData(request).toJSONString(),
-				new TypeReference<CommonInDto<WxhbSetLotterySwitchReq>>(){});
-		WxhbLotteryUpdateSwitchInDto inDto = new WxhbLotteryUpdateSwitchInDto();
-		BeanUtils.copyProperties(setLotterySwitchReq.getParams(), inDto);
-		inDto.setAccessToken(OAuthTokenUtil.access_token);
-		CommonOutDto commonOutDto = wxhbLotteryService.updateWxhbLotterySwitch(inDto);
+		final String jsonData = HttpRequestJsonPrameterUtil.getRestData(request);
+		LOG.info("****** req={}", jsonData);
+		CommonOutDto commonOutDto = new CommonOutDto();
+		if (jsonData != null) {
+			WxhbSetLotterySwitchReq req = JSON.parseObject(jsonData, WxhbSetLotterySwitchReq.class);
+			WxhbLotteryUpdateSwitchInDto inDto = new WxhbLotteryUpdateSwitchInDto();
+			BeanUtils.copyProperties(req, inDto);
+			inDto.setAccessToken(OAuthTokenUtil.access_token);
+			commonOutDto = wxhbLotteryService.updateWxhbLotterySwitch(inDto);
+		}
 		
 		LOG.info("****** ResponseBody={}", JSON.toJSONString(commonOutDto));
 		LOG.info("########################### END INVOKE WxhbLotteryController.wxhbSetLotterySwitch ###########################\n\n");
@@ -172,18 +186,50 @@ public class WxhbLotteryController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/query-bind-ticket", method = RequestMethod.POST)
-	public JSONObject wxhbQueryBindTicket(Object obj, Model model,
-			HttpServletRequest request, HttpServletResponse response)
+	@ResponseBody
+	@RequestMapping(value = "/query-bind-ticket", method = RequestMethod.GET)
+	public JSONObject queryWxhbLotteryBindTicketByPage(Object obj, Model model,
+			HttpServletRequest request, HttpServletResponse response, WxhbQueryBindTicketReq req )
 			throws Exception {
-		LOG.info("########################### BEGIN INVOKE WxhbLotteryController.wxhbQueryBindTicket ###########################");
-		WxhbQueryBindTicketReq queryBindTicketReq = JSON.parseObject(
-				JosnRPCBizHelper.getForwardData(request).toJSONString(),
-				new TypeReference<WxhbQueryBindTicketReq>(){});
-		// TODO
-		LOG.info("****** ResponseBody=");
-		LOG.info("########################### END INVOKE WxhbLotteryController.wxhbQueryBindTicket ###########################\n\n");
-		return null;
+		LOG.info("########################### BEGIN INVOKE WxhbLotteryController.queryWxhbLotteryBindTicketByPage ###########################");
+		
+		int start = (req.getPage() - 1 ) * req.getRows();
+		WxhbLotteryBindTicketInDto inDto = new WxhbLotteryBindTicketInDto();
+		inDto.setStart(start);;
+		inDto.setLimit(req.getRows());
+		inDto.setHbLotteryId(req.getHbLotteryId());
+		PageResult<WxhbLotteryBindTicketVO> result = wxhbLotteryService.queryWxhbLotteryBindTicketByPage(inDto);
+		LOG.info("****** ResponseBody={}", JSON.toJSONString(result));
+		LOG.info("########################### END INVOKE WxhbLotteryController.queryWxhbLotteryBindTicketByPage ###########################\n\n");
+		return JSON.parseObject(JSON.toJSONString(result));
+	}
+	
+	/**
+	 * 查询未被使用的有效ticket
+	 * @param obj
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param req
+	 * @return
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/query-unbind-ticket", method = RequestMethod.GET)
+	public JSONObject queryUnBindTicketByPage(Object obj, Model model,
+			HttpServletRequest request, HttpServletResponse response, WxhbQueryBindTicketReq req )
+			throws Exception {
+		LOG.info("########################### BEGIN INVOKE WxhbLotteryController.queryUnBindTicketByPage ###########################");
+		
+		int start = (req.getPage() - 1 ) * req.getRows();
+		WxhbLotteryUnBindTicketInDto inDto = new WxhbLotteryUnBindTicketInDto();
+		inDto.setStart(start);;
+		inDto.setLimit(req.getRows());
+		//inDto.setHbLotteryId(req.getHbLotteryId());
+		PageResult<WxhbLotteryUnbindTicketVO> result = wxhbLotteryService.queryWxhbUnBindTicketByPage(inDto);
+		LOG.info("****** ResponseBody={}", JSON.toJSONString(result));
+		LOG.info("########################### END INVOKE WxhbLotteryController.queryUnBindTicketByPage ###########################\n\n");
+		return JSON.parseObject(JSON.toJSONString(result));
 	}
 	
 	/**
@@ -195,18 +241,73 @@ public class WxhbLotteryController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/query-by-page", method = RequestMethod.POST)
+	@ResponseBody
+	@RequestMapping(value = "/query-by-page", method = RequestMethod.GET)
 	public JSONObject wxhbQueryLotteryByPage(Object obj, Model model,
-			HttpServletRequest request, HttpServletResponse response)
+			HttpServletRequest request, HttpServletResponse response, WxhbQueryLotteryByPageReq req)
 			throws Exception {
 		LOG.info("########################### BEGIN INVOKE WxhbLotteryController.wxhbQueryLotteryByPage ###########################");
-		WxhbQueryLotteryByPageReq queryLotteryByPageReq = JSON.parseObject(
-				JosnRPCBizHelper.getForwardData(request).toJSONString(),
-				new TypeReference<WxhbQueryLotteryByPageReq>(){});
-		// TODO
-		LOG.info("****** ResponseBody=");
+		
+		int start = (req.getPage() - 1 ) * req.getRows();
+		WxhbLotteryQueryByPageInDto inDto = new WxhbLotteryQueryByPageInDto();
+		inDto.setTitle(req.getTitle());
+		inDto.setStatus(req.getStatus());
+		
+		inDto.setStart(start);
+		inDto.setLimit(req.getRows());
+		PageResult<WxhbLottery> result = wxhbLotteryService.queryWxhbLotteryByPage(inDto);
+		LOG.info("****** ResponseBody={}", JSON.toJSONString(result));
 		LOG.info("########################### END INVOKE WxhbLotteryController.wxhbQueryLotteryByPage ###########################\n\n");
-		return null;
+		return JSON.parseObject(JSON.toJSONString(result));
+	}
+	
+	/**
+	 * 查询红包活动详情
+	 * @param obj
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/detail/{id}", method = RequestMethod.GET)
+	public JSONObject queryWxhbQueryLotteryById(Object obj, Model model,
+			HttpServletRequest request, HttpServletResponse response, @PathVariable(value="id") Integer id)
+			throws Exception {
+		LOG.info("########################### BEGIN INVOKE WxhbLotteryController.queryWxhbQueryLotteryById ###########################");
+		
+		JSONObject result = new JSONObject();
+		WxhbLottery lottery = wxhbLotteryService.queryWxhbLotteryDetail(id);
+		if (lottery != null) {
+			result = JSON.parseObject(JSON.toJSONString(lottery));
+			
+			if (lottery.getCreateTime() != null) {
+				String ct = sdf.format(lottery.getCreateTime());
+				result.put("createTime", ct);
+			}
+			if (lottery.getUpdateTime() != null) {
+				String ct = sdf.format(lottery.getUpdateTime());
+				result.put("updateTime", ct);
+			}
+			if (lottery.getExpireTime() != null) {
+				String ct = sdf.format(lottery.getExpireTime());
+				result.put("expireTime", ct);
+			}
+			if (lottery.getBeginTime() != null) {
+				String ct = sdf.format(lottery.getBeginTime());
+				result.put("beginTime", ct);
+			}
+			if (lottery.getStatus() == 0) {
+				result.put("statusStr", "关闭");
+			} else if(lottery.getStatus() == 1) {
+				result.put("statusStr", "开启");
+			} 
+		} 
+		LOG.info("****** ResponseBody={}", result);
+		LOG.info("########################### END INVOKE WxhbLotteryController.queryWxhbQueryLotteryById ###########################\n\n");
+		return result;
 	}
 	
 	/**
@@ -388,4 +489,6 @@ public class WxhbLotteryController {
 	   		return null;
    		}
    	}
+   	
+   	private static final SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd mm:hh:ss");
 }

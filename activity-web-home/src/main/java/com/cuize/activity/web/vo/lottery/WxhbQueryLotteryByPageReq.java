@@ -12,7 +12,7 @@ public class WxhbQueryLotteryByPageReq extends PageInfo {
 	/**
 	 * 活动状态：0关闭，1开启，2全部
 	 */
-	private int status;
+	private int status = 2;
 	
 	/**
 	 * 活动名称，模糊查询

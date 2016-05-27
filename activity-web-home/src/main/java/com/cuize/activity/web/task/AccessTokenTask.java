@@ -23,8 +23,8 @@ public class AccessTokenTask {
 	/**
      * 每一小时更新一次access_token
      */
-	@Scheduled(cron = "0 0/50 * * * ?")
-	@PostConstruct
+	/*@Scheduled(cron = "0 0/50 * * * ?")
+	@PostConstruct*/
     public void refresh(){
 		LOG.info("AccessTokenTask.refresh:start");
 		OAuthTokenRefresh.refreshOAuthToken();

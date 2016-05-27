@@ -33,11 +33,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cuize.activity.service.dto.GlobalConfig;
 import com.cuize.activity.service.dto.common.CommonOutDto;
+import com.cuize.activity.service.dto.common.PageResult;
 import com.cuize.activity.service.dto.wxlottery.WxhbBindNoticeInDto;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotteryAddInDto;
+import com.cuize.activity.service.dto.wxlottery.WxhbLotteryBindTicketInDto;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotteryDetailQueryOutDto;
+import com.cuize.activity.service.dto.wxlottery.WxhbLotteryQueryByPageInDto;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotterySetPrizeBucketInDto;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotterySetPrizeBucketOutDto;
+import com.cuize.activity.service.dto.wxlottery.WxhbLotteryUnBindTicketInDto;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotteryUpdateSwitchInDto;
 import com.cuize.activity.service.util.CommonOutDtoUtil;
 import com.cuize.activity.service.util.CommonWeixinCode;
@@ -48,8 +52,14 @@ import com.cuize.activity.service.weixin.WxhbSetPrizeBucketResultBean;
 import com.cuize.activity.service.weixin.WxhbTicket;
 import com.cuize.commons.dao.activity.domain.WxhbLottery;
 import com.cuize.commons.dao.activity.domain.WxhbLotteryTicket;
+import com.cuize.commons.dao.activity.domain.WxhbPreorder;
 import com.cuize.commons.dao.activity.mapper.WxhbLotteryMapper;
 import com.cuize.commons.dao.activity.mapper.WxhbPreorderMapper;
+import com.cuize.commons.dao.activity.queryvo.common.Page;
+import com.cuize.commons.dao.activity.queryvo.lottery.LotteryQueryVO;
+import com.cuize.commons.dao.activity.queryvo.preorder.PreorderQueryVO;
+import com.cuize.commons.dao.activity.resultvo.WxhbLotteryBindTicketVO;
+import com.cuize.commons.dao.activity.resultvo.WxhbLotteryUnbindTicketVO;
 import com.cuize.commons.utils.WXPayUtil;
 
 /**
@@ -72,7 +82,7 @@ public class WxhbLotteryService {
 	@Autowired
 	private GlobalConfig globalConfig;
 	
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddmmhhss");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd mm:hh:ss");
 	
 	private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -447,6 +457,75 @@ public class WxhbLotteryService {
 		} catch (java.text.ParseException e) {
 			LOG.error("String转换Date异常", e);
 		}
+		return result;
+	}
+	
+	/**
+	 * 分页查询红包活动
+	 * @param inDto
+	 * @return
+	 */
+	public PageResult<WxhbLottery> queryWxhbLotteryByPage(WxhbLotteryQueryByPageInDto inDto){
+		PageResult<WxhbLottery> result = new PageResult<WxhbLottery>();
+		LotteryQueryVO query = new LotteryQueryVO();
+		query.setTitle(inDto.getTitle());
+		query.setStatus(inDto.getStatus());
+		
+		Page page = new Page();
+		page.setStart(inDto.getStart());
+		page.setLimit(inDto.getLimit());
+		
+		int total = wxhbLotteryMapper.countWxhbLotteryPage(query);
+		List<WxhbLottery> list = new ArrayList<WxhbLottery>();
+		if (total > 0) {
+			list = wxhbLotteryMapper.queryWxhbLotteryByPage(page, query);
+		}
+		
+		result.setTotal(total);
+		result.setRows(list);
+		return result;
+	}
+	
+	/**
+	 * 分页查询红包活动已绑定的ticket
+	 */
+	public PageResult<WxhbLotteryBindTicketVO> queryWxhbLotteryBindTicketByPage(WxhbLotteryBindTicketInDto inDto){
+		PageResult<WxhbLotteryBindTicketVO> result = new PageResult<WxhbLotteryBindTicketVO>();
+		
+		Page page = new Page();
+		page.setStart(inDto.getStart());
+		page.setLimit(inDto.getLimit());
+		
+		int total = wxhbLotteryMapper.countWxhbLotteryBindTicketByPage(inDto.getHbLotteryId());
+		List<WxhbLotteryBindTicketVO> list = new ArrayList<WxhbLotteryBindTicketVO>();
+		if (total > 0) {
+			list = wxhbLotteryMapper.queryWxhbLotteryBindTicketByPage(page, inDto.getHbLotteryId());
+		}
+		result.setTotal(total);
+		result.setRows(list);
+		return result;
+	}
+	
+	/**
+	 * 分页查询未使用的有效红包
+	 * @param inDto
+	 * @return
+	 */
+	public PageResult<WxhbLotteryUnbindTicketVO> queryWxhbUnBindTicketByPage(WxhbLotteryUnBindTicketInDto inDto){
+		PageResult<WxhbLotteryUnbindTicketVO> result = new PageResult<WxhbLotteryUnbindTicketVO>();
+		
+		Page page = new Page();
+		page.setStart(inDto.getStart());
+		page.setLimit(inDto.getLimit());
+		
+		int total = wxhbLotteryMapper.countUnBindTicketByPage(page);
+		List<WxhbLotteryUnbindTicketVO> list = new ArrayList<WxhbLotteryUnbindTicketVO>();
+		if (total > 0) {
+			list = wxhbLotteryMapper.queryUnBindTicketByPage(page);
+		}
+		result.setTotal(total);
+		result.setRows(list);
+		
 		return result;
 	}
 }

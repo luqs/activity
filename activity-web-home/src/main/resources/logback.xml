@@ -39,8 +39,8 @@
 			<charset>UTF-8</charset>
 		</encoder>
 	</appender>
-	<logger name="com.cuize.activity.dao.mapper" level="debug" additivity="true"/>
-	<root level="trace" >
+
+	<root level="debug" >
 		<appender-ref ref="infoFile" />
 		<appender-ref ref="errorFile" />
 		<appender-ref ref="stdout" />

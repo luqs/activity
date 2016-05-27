@@ -5,8 +5,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.SortedMap;
@@ -21,6 +23,7 @@ import org.apache.http.entity.ContentType;
 import org.jdom.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +34,12 @@ import com.cuize.activity.service.constant.WxConstant;
 import com.cuize.activity.service.constant.WxhbTypeConstant;
 import com.cuize.activity.service.dto.GlobalConfig;
 import com.cuize.activity.service.dto.common.CommonOutDto;
+import com.cuize.activity.service.dto.common.PageResult;
 import com.cuize.activity.service.dto.wxpreorder.WxhbPreorderAddInDto;
 import com.cuize.activity.service.dto.wxpreorder.WxhbPreorderAddOutDto;
+import com.cuize.activity.service.dto.wxpreorder.WxhbPreorderQueryByPageInDto;
+import com.cuize.activity.service.dto.wxpreorder.WxhbPreorderQueryByPageOutDto;
+import com.cuize.activity.service.dto.wxpreorder.WxhbPreorderQueryDetailOutDto;
 import com.cuize.activity.service.util.CommonOutDtoUtil;
 import com.cuize.activity.service.util.CommonWeixinCode;
 import com.cuize.activity.service.util.Map2BeanUtil;
@@ -41,6 +48,8 @@ import com.cuize.activity.service.weixin.PreorderResultBean;
 import com.cuize.commons.dao.activity.domain.WxhbPreorder;
 import com.cuize.commons.dao.activity.domain.WxhbPreorderTicket;
 import com.cuize.commons.dao.activity.mapper.WxhbPreorderMapper;
+import com.cuize.commons.dao.activity.queryvo.common.Page;
+import com.cuize.commons.dao.activity.queryvo.preorder.PreorderQueryVO;
 import com.cuize.commons.utils.BeanInitialUtils;
 import com.cuize.commons.utils.WXPayUtil;
 
@@ -184,6 +193,7 @@ public class WxhbPreorderService {
 					// 预下单成功
 					String sendTime = resBean.getSend_time();
 					
+					preorderDb.setResult("success");
 					preorderDb.setSendTime(sendTime);
 					preorderDb.setDetailId(resBean.getDetail_id());
 					preorderDb.setExpireTime(this.getExpireTime(sendTime)); //计算失效时间
@@ -296,4 +306,49 @@ public class WxhbPreorderService {
 	
 	private static final Random random = new Random();
 	
+	/**
+	 * 分页查询预下单记录
+	 * @param inDto
+	 * @return
+	 */
+	public PageResult<WxhbPreorder> queryWxhbPreorderByPage(WxhbPreorderQueryByPageInDto inDto){
+		PageResult<WxhbPreorder> result = new PageResult<WxhbPreorder>();
+		PreorderQueryVO query = new PreorderQueryVO();
+		query.setHbType(inDto.getHbType());
+		query.setStatus(inDto.getStatus());
+		
+		Page page = new Page();
+		page.setStart(inDto.getStart());
+		page.setLimit(inDto.getLimit());
+		
+		int total = wxhbPreorderMapper.countWxhbPreorderByPage(query);
+		List<WxhbPreorder> list = new ArrayList<WxhbPreorder>();
+		if (total > 0) {
+			list = wxhbPreorderMapper.queryWxhbPreorderByPage(page, query);
+		}
+		
+		result.setTotal(total);
+		result.setRows(list);
+		return result;
+	}
+	
+	/**
+	 * 查询预下单详情
+	 * @param id
+	 * @return
+	 */
+	public WxhbPreorderQueryDetailOutDto queryWxhbPreorderById(int id){
+		WxhbPreorderQueryDetailOutDto result = new WxhbPreorderQueryDetailOutDto();
+		WxhbPreorder preorder = wxhbPreorderMapper.queryWxhbPreorderById(id);
+		if (preorder == null) {
+			return null;
+		} else {
+			BeanUtils.copyProperties(preorder, result, new String[]{"ticket"});
+			WxhbPreorderTicket ticket = wxhbPreorderMapper.queryWxhbPreorderTicketByPreorderId(id);
+			if (ticket != null) {
+				result.setTicket(ticket.getTicket());
+			}
+		}
+		return result;
+	}
 }
