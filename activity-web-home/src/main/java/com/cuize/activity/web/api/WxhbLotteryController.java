@@ -8,7 +8,6 @@ import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
@@ -40,11 +38,11 @@ import com.cuize.activity.service.dto.wxlottery.WxhbLotteryUnBindTicketInDto;
 import com.cuize.activity.service.dto.wxlottery.WxhbLotteryUpdateSwitchInDto;
 import com.cuize.activity.service.impl.WxhbLotteryService;
 import com.cuize.activity.service.impl.WxhbPreorderService;
-import com.cuize.activity.web.helper.JosnRPCBizHelper;
 import com.cuize.activity.web.util.HttpRequestJsonPrameterUtil;
 import com.cuize.activity.web.util.WeiXinOAuthUtil;
 import com.cuize.activity.web.util.oauth.Configuration;
 import com.cuize.activity.web.util.oauth.OAuthTokenUtil;
+import com.cuize.activity.web.util.oauth.WeixinException;
 import com.cuize.activity.web.util.oauth.pojo.OAuth2;
 import com.cuize.activity.web.vo.lottery.WxhbLotteryAddReq;
 import com.cuize.activity.web.vo.lottery.WxhbQueryBindTicketReq;
@@ -52,6 +50,7 @@ import com.cuize.activity.web.vo.lottery.WxhbQueryLotteryByPageReq;
 import com.cuize.activity.web.vo.lottery.WxhbQueryLotteryListReq;
 import com.cuize.activity.web.vo.lottery.WxhbSetLotterySwitchReq;
 import com.cuize.activity.web.vo.lottery.WxhbSetPrizeBucketReq;
+import com.cuize.commons.meta.JosnRPCBizHelper;
 import com.cuize.commons.dao.activity.domain.WxhbLottery;
 import com.cuize.commons.dao.activity.resultvo.WxhbLotteryBindTicketVO;
 import com.cuize.commons.dao.activity.resultvo.WxhbLotteryUnbindTicketVO;
