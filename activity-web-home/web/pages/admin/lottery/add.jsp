@@ -46,7 +46,8 @@
 				</td>
 				<td>
 					<input  type="text" class="easyui-textbox" name="title" 
-						 style="width:200px;height:32px;" required="required">
+						 style="width:200px;height:32px;" required="required"
+						 data-options="validType:'validateChLength[1,12]'">
 				</td>
 				<td class="tip">
 					最长6个汉字，12个英文字母
@@ -58,7 +59,8 @@
 				</td>
 				<td>
 					<input  type="text" class="easyui-textbox" name="desc" 
-						 style="width:200px;height:32px;" required="required">
+						 style="width:200px;height:32px;" required="required"
+						  data-options="validType:'validateChLength[1,14]'">
 				</td>
 				<td class="tip">
 					最长7个汉字，14个英文字母
@@ -124,6 +126,24 @@
 	</form>
 
 	<script type="text/javascript">
+	
+	    $.extend($.fn.validatebox.defaults.rules, {
+	    	validateChLength: {
+	    		validator: function(value, param){
+	    			var curLen = value.replace(/[^\x00-\xff]/g,"xx").length;
+	    			/* 
+	    			alert(param[0]);
+	    			alert(param[1]); */
+	    			if (curLen > param[1] || curLen <param[0]) {
+	    				return false;
+	    			} else {
+	    				return true;
+	    			}
+	    		},
+	    		message: '最长{1}个英文字母，中文为两个字符'
+	        }
+	    });
+	
 		$(function(){
 			// window里面使用该方法有问题？
 			//$('#beginTime').datetimebox('setValue', '6/1/2012 12:30:56');

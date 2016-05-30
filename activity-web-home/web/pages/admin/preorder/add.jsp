@@ -94,7 +94,8 @@
 					红包祝福语
 				</td>
 				<td>
-					<input class="easyui-textbox" name="wishing" style="width:200px;height:32px;" required="required">
+					<input class="easyui-textbox" name="wishing" style="width:200px;height:32px;" required="required"
+							data-options="validType:['length[1,16]']">
 				</td>
 				<td class="tip">
 					展示在红包页面
@@ -105,7 +106,8 @@
 					活动名称
 				</td>
 				<td>
-					<input class="easyui-textbox" name="actName" style="width:200px;height:32px;" required="required">
+					<input class="easyui-textbox" name="actName" style="width:200px;height:32px;" required="required"
+							data-options="validType:['length[1,16]']">
 				</td>
 				<td class="tip">
 					在不支持原生红包的微信版本中展示在红包消息 
@@ -116,7 +118,8 @@
 					备注
 				</td>
 				<td>
-					<input class="easyui-textbox" name="remark" style="width:200px;height:32px;"required="required">
+					<input class="easyui-textbox" name="remark" style="width:200px;height:32px;"required="required"
+							data-options="validType:['length[1,16]']">
 				</td>
 				<td class="tip">
 					在不支持原生红包的微信版本中展示在红包消息

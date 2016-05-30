@@ -154,5 +154,5 @@ public class WxhbPreorderController {
 		return json;
 	}
 	
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd mm:hh:ss");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 }

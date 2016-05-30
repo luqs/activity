@@ -82,7 +82,7 @@ public class WxhbLotteryService {
 	@Autowired
 	private GlobalConfig globalConfig;
 	
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd mm:hh:ss");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	

@@ -1,6 +1,8 @@
 package com.cuize.activity.service.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.text.DateFormat;
@@ -120,6 +122,18 @@ public class WxhbPreorderService {
 		
 		// 微信红包预下单
 		// 参数（按参数名的ASCII码的升序排列）
+		
+		String utf8Wishing = null;
+		String utf8Remark = null;
+		String utfActName = null;
+		try {
+			utf8Wishing = URLEncoder.encode(preorderDb.getWishing(), "UTF-8");
+			utf8Remark =  URLEncoder.encode(preorderDb.getRemark(), "UTF-8");
+			utfActName =  URLEncoder.encode(preorderDb.getActName(), "UTF-8");
+		} catch (UnsupportedEncodingException e2) {
+			LOG.error("WxhbPreorderService.preorder微信参数中文utf8编码异常", e2);
+		}
+		
 		SortedMap<String, String> wxParams = new TreeMap<String, String>();
 		wxParams.put("nonce_str", WXPayUtil.createNoncestr());
 		wxParams.put("mch_billno", preorderDb.getMchBillNo());
@@ -130,9 +144,9 @@ public class WxhbPreorderService {
 		wxParams.put("total_amount", String.valueOf(preorderDb.getTotalAmount()));
 		wxParams.put("total_num", String.valueOf(preorderDb.getTotalNum()));
 		wxParams.put("amt_type", preorderDb.getAmtType());
-		wxParams.put("wishing", preorderDb.getWishing());
-		wxParams.put("act_name", preorderDb.getActName());
-		wxParams.put("remark", preorderDb.getRemark());
+		wxParams.put("wishing", utf8Wishing);
+		wxParams.put("act_name", utfActName);
+		wxParams.put("remark", utf8Remark);
 		wxParams.put("auth_mchid", WxConstant.WEIXIN_AUTH_MCHID);
 		wxParams.put("auth_appid", WxConstant.WEIXIN_AUTH_APPID);
 		wxParams.put("risk_cntl", WxConstant.WEIXIN_RISK_CONTROL);
