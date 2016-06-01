@@ -2,6 +2,7 @@ package com.cuize.activity.web.api;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -440,7 +441,8 @@ public class WxhbLotteryController {
 		LOG.info("****** ResponseBody=");
 		LOG.info("########################### END INVOKE WxhbLotteryController.mytest ###########################\n\n");
 		JSONObject ss= new JSONObject();
-		ss.put("dd", "d");
+		List<String> s = wxhbPreorderService.queryWxhbPreorderTicketByCzhbLotteryId(9);
+		ss.put("dd", s);
 		return ss;
 	}
 	

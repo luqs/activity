@@ -44,6 +44,11 @@ public class WxhbPreorderAddInDto {
 	 * 备注：在不支持原生红包的微信版本中展示在红包消息
 	 */
 	private String remark;
+	
+	/**
+	 * 萃泽红包活动ID，为0标识为独立创建，非0为统一创建
+	 */
+	private int czhbLotteryId = 0;
 
 	public String getHbType() {
 		return hbType;
@@ -99,6 +104,14 @@ public class WxhbPreorderAddInDto {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public int getCzhbLotteryId() {
+		return czhbLotteryId;
+	}
+
+	public void setCzhbLotteryId(int czhbLotteryId) {
+		this.czhbLotteryId = czhbLotteryId;
 	}
 	
 	

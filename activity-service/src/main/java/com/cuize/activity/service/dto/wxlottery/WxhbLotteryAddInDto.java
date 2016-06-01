@@ -31,12 +31,12 @@ public class WxhbLotteryAddInDto {
 	private int onoff = 1;
 	
 	/**
-	 * 活动开始时间：格式为yyyyMMddmmhhss
+	 * 活动开始时间：格式为yyyy-MM-dd HH:mm:ss
 	 */
 	private String beginTime;
 	
 	/**
-	 * 活动结束时间（最长91天）：格式为yyyyMMddmmhhss
+	 * 活动结束时间（最长91天）：格式为yyyy-MM-dd HH:mm:ss
 	 */
 	private String expireTime;
 	
@@ -49,6 +49,11 @@ public class WxhbLotteryAddInDto {
 	 * 微信令牌
 	 */
 	private String accessToken;
+	
+	/**
+	 * 萃泽红包活动ID，为0标识为独立创建，非0为统一创建
+	 */
+	private int czhbLotteryId = 0;
 
 	public int getUseTemplate() {
 		return useTemplate;
@@ -113,6 +118,12 @@ public class WxhbLotteryAddInDto {
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
-	
-	
+
+	public int getCzhbLotteryId() {
+		return czhbLotteryId;
+	}
+
+	public void setCzhbLotteryId(int czhbLotteryId) {
+		this.czhbLotteryId = czhbLotteryId;
+	}
 }

@@ -23,7 +23,7 @@ public class AccessTokenTask {
 	/**
      * 每一小时更新一次access_token
      */
-	@Scheduled(cron = "0 0/50 * * * ?")
+	@Scheduled(cron = "0 */60 * * * ?")
 	@PostConstruct
     public void refresh(){
 		LOG.info("AccessTokenTask.refresh:start");

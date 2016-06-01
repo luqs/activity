@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
+import com.cuize.activity.service.constant.WeChatApiConstant;
 import com.cuize.activity.service.constant.WxConstant;
 import com.cuize.activity.service.constant.WxhbTypeConstant;
 import com.cuize.activity.service.dto.GlobalConfig;
@@ -47,11 +48,13 @@ import com.cuize.activity.service.util.CommonWeixinCode;
 import com.cuize.activity.service.util.Map2BeanUtil;
 import com.cuize.activity.service.weixin.WecatCaSecurityHttpUtil;
 import com.cuize.activity.service.weixin.PreorderResultBean;
+import com.cuize.commons.dao.activity.domain.WxApiLog;
 import com.cuize.commons.dao.activity.domain.WxhbPreorder;
 import com.cuize.commons.dao.activity.domain.WxhbPreorderTicket;
+import com.cuize.commons.dao.activity.mapper.WxApiLogMapper;
 import com.cuize.commons.dao.activity.mapper.WxhbPreorderMapper;
 import com.cuize.commons.dao.activity.queryvo.common.Page;
-import com.cuize.commons.dao.activity.queryvo.preorder.PreorderQueryVO;
+import com.cuize.commons.dao.activity.queryvo.preorder.WxPreorderQueryVO;
 import com.cuize.commons.utils.BeanInitialUtils;
 import com.cuize.commons.utils.WXPayUtil;
 
@@ -68,6 +71,9 @@ public class WxhbPreorderService {
 
 	@Autowired
 	private WxhbPreorderMapper wxhbPreorderMapper;
+	
+	@Autowired
+	private WxApiLogMapper wxApiLogMapper;
 	
 	@Autowired
 	private GlobalConfig globalConfig;
@@ -112,6 +118,7 @@ public class WxhbPreorderService {
 		preorderDb.setWishing(inDto.getWishing()); //红包祝福语
 		preorderDb.setActName(inDto.getActName()); //活动名称
 		preorderDb.setRemark(inDto.getRemark()); //备注信息
+		preorderDb.setCzhbLotteryId(inDto.getCzhbLotteryId());
 		wxhbPreorderMapper.insertWxhbPreorder(preorderDb);
 		
 		if (preorderDb.getId() == 0) {
@@ -123,10 +130,12 @@ public class WxhbPreorderService {
 		// 微信红包预下单
 		// 参数（按参数名的ASCII码的升序排列）
 		
+		String utf8MchName = null;
 		String utf8Wishing = null;
 		String utf8Remark = null;
 		String utfActName = null;
 		try {
+			utf8MchName = URLEncoder.encode(preorderDb.getMchName(), "UTF-8");
 			utf8Wishing = URLEncoder.encode(preorderDb.getWishing(), "UTF-8");
 			utf8Remark =  URLEncoder.encode(preorderDb.getRemark(), "UTF-8");
 			utfActName =  URLEncoder.encode(preorderDb.getActName(), "UTF-8");
@@ -139,7 +148,7 @@ public class WxhbPreorderService {
 		wxParams.put("mch_billno", preorderDb.getMchBillNo());
 		wxParams.put("mch_id", preorderDb.getMchId());
 		wxParams.put("wxappid", globalConfig.getAppid()); // 微信公众号appid
-		wxParams.put("send_name", preorderDb.getMchName());
+		wxParams.put("send_name", utf8MchName);
 		wxParams.put("hb_type", preorderDb.getHbType());
 		wxParams.put("total_amount", String.valueOf(preorderDb.getTotalAmount()));
 		wxParams.put("total_num", String.valueOf(preorderDb.getTotalNum()));
@@ -155,6 +164,8 @@ public class WxhbPreorderService {
 		wxParams.put("sign", sign);
 		String requestXML = WXPayUtil.getPrepayXml(wxParams);
 		LOG.info("WxhbPreorderService.preorder微信预下单request："+requestXML);
+		WxApiLog log = this.createWxApiLog(WeChatApiConstant.SHAKEHAND_PREORDER.getApiName(), requestXML);
+		this.saveOrUpdateWxApiLog(log);
 		
 		String resXml = null;
 /*		try {
@@ -185,6 +196,8 @@ public class WxhbPreorderService {
 			return null;
 		}*/
 		LOG.info("WxhbPreorderService.preorder微信预下单response:"+resXml);
+		log.setRsp(resXml);
+		this.saveOrUpdateWxApiLog(log);
 		
 		Map<String,String> resultMap = null;
 		try {
@@ -327,7 +340,7 @@ public class WxhbPreorderService {
 	 */
 	public PageResult<WxhbPreorder> queryWxhbPreorderByPage(WxhbPreorderQueryByPageInDto inDto){
 		PageResult<WxhbPreorder> result = new PageResult<WxhbPreorder>();
-		PreorderQueryVO query = new PreorderQueryVO();
+		WxPreorderQueryVO query = new WxPreorderQueryVO();
 		query.setHbType(inDto.getHbType());
 		query.setStatus(inDto.getStatus());
 		
@@ -365,4 +378,36 @@ public class WxhbPreorderService {
 		}
 		return result;
 	}
+	
+	/**
+	 * 根据红包活动ID查询其下所有可用的ticket
+	 * @param czhbLotteryId
+	 * @return
+	 */
+	public List<String> queryWxhbPreorderTicketByCzhbLotteryId(int czhbLotteryId){
+		
+		return wxhbPreorderMapper.queryWxhbPreorderTicketByCzhbLotteryId(czhbLotteryId);
+	}
+	
+	private WxApiLog createWxApiLog(String apiName, String req){
+		WxApiLog log = new WxApiLog();
+		log.setApiName(apiName);
+		log.setReq(req);
+		return log;
+	}
+	
+	/**
+	 * 记录调用微信接口LOG
+	 * @param log
+	 */
+	private void saveOrUpdateWxApiLog(WxApiLog log){
+		if (log.getId() > 0) {
+			// 更新
+			wxApiLogMapper.updateWxApiLog(log);
+		} else {
+			// 新增
+			wxApiLogMapper.saveWxApiLog(log);
+		}
+	}
+	
 }

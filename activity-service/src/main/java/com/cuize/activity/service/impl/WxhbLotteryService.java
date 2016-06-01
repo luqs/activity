@@ -31,6 +31,7 @@ import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.cuize.activity.service.constant.WeChatApiConstant;
 import com.cuize.activity.service.dto.GlobalConfig;
 import com.cuize.activity.service.dto.common.CommonOutDto;
 import com.cuize.activity.service.dto.common.PageResult;
@@ -50,14 +51,16 @@ import com.cuize.activity.service.weixin.WxhbAddLotteryResultBean;
 import com.cuize.activity.service.weixin.WxhbSetLotterySwitchResultBean;
 import com.cuize.activity.service.weixin.WxhbSetPrizeBucketResultBean;
 import com.cuize.activity.service.weixin.WxhbTicket;
+import com.cuize.commons.dao.activity.domain.WxApiLog;
 import com.cuize.commons.dao.activity.domain.WxhbLottery;
 import com.cuize.commons.dao.activity.domain.WxhbLotteryTicket;
 import com.cuize.commons.dao.activity.domain.WxhbPreorder;
+import com.cuize.commons.dao.activity.mapper.WxApiLogMapper;
 import com.cuize.commons.dao.activity.mapper.WxhbLotteryMapper;
 import com.cuize.commons.dao.activity.mapper.WxhbPreorderMapper;
 import com.cuize.commons.dao.activity.queryvo.common.Page;
-import com.cuize.commons.dao.activity.queryvo.lottery.LotteryQueryVO;
-import com.cuize.commons.dao.activity.queryvo.preorder.PreorderQueryVO;
+import com.cuize.commons.dao.activity.queryvo.lottery.WxLotteryQueryVO;
+import com.cuize.commons.dao.activity.queryvo.preorder.WxPreorderQueryVO;
 import com.cuize.commons.dao.activity.resultvo.WxhbLotteryBindTicketVO;
 import com.cuize.commons.dao.activity.resultvo.WxhbLotteryUnbindTicketVO;
 import com.cuize.commons.utils.WXPayUtil;
@@ -78,6 +81,9 @@ public class WxhbLotteryService {
 	
 	@Autowired
 	private WxhbPreorderMapper wxhbPreorderMapper;
+	
+	@Autowired
+	private WxApiLogMapper wxApiLogMapper;
 	
 	@Autowired
 	private GlobalConfig globalConfig;
@@ -104,6 +110,7 @@ public class WxhbLotteryService {
 		lotteryDb.setBeginTime(this.formatDate(inDto.getBeginTime()));
 		lotteryDb.setExpireTime(this.formatDate(inDto.getExpireTime()));
 		lotteryDb.setTotal(inDto.getTotal());
+		lotteryDb.setCzhbLotteryId(inDto.getCzhbLotteryId());
 		wxhbLotteryMapper.insertWxhbLottery(lotteryDb);
 		
 		if (lotteryDb.getId() == 0) {
@@ -124,6 +131,8 @@ public class WxhbLotteryService {
 		wxParams.put("key", globalConfig.getApikey());//TODO 替换为其他key
 		
 		LOG.info("WxhbLotteryService.createWxhbLottery添加红包活动request：{}", JSON.toJSONString(wxParams));
+		WxApiLog log = this.createWxApiLog(WeChatApiConstant.SHAKEHAND_ADD_LOTTERY.getApiName(), JSON.toJSONString(wxParams));
+		this.saveOrUpdateWxApiLog(log);
 		
 		String resJsonStr = null;
 		try {
@@ -144,6 +153,8 @@ public class WxhbLotteryService {
 			LOG.error("WxhbLotteryService.createWxhbLottery添加红包活动异常", e);
 		}
 		LOG.info("WxhbLotteryService.createWxhbLottery添加红包活动response:{}", resJsonStr);
+		log.setRsp(resJsonStr);
+		this.saveOrUpdateWxApiLog(log);
 		
 		WxhbAddLotteryResultBean resultBean = JSON.parseObject(resJsonStr, WxhbAddLotteryResultBean.class);
 		
@@ -202,6 +213,8 @@ public class WxhbLotteryService {
 		wxParams.put("sponsor_appid", globalConfig.getAppid());
 		wxParams.put("prize_info_list", prizeInfoList);
 		LOG.info("WxhbLotteryService.setWxhbLotteryPrizeBucket录入红包信息request：{}", JSON.toJSONString(wxParams));
+		WxApiLog log = this.createWxApiLog(WeChatApiConstant.SHAKEHAND_SET_PRIZE_BUCKET.getApiName(), JSON.toJSONString(wxParams));
+		this.saveOrUpdateWxApiLog(log);
 		
 		String resJsonStr = null;
 		try {
@@ -221,6 +234,8 @@ public class WxhbLotteryService {
 			LOG.error("WxhbLotteryService.createWxhbLottery录入红包信息异常", e);
 		}
 		LOG.info("WxhbLotteryService.setWxhbLotteryPrizeBucket录入红包信息response:{}", resJsonStr);
+		log.setRsp(resJsonStr);
+		this.saveOrUpdateWxApiLog(log);
 		
 		// 存储关联关系
 		/*WxhbSetPrizeBucketResultBean resultBean = JSON.parseObject(resJsonStr, WxhbSetPrizeBucketResultBean.class);*/
@@ -336,16 +351,22 @@ public class WxhbLotteryService {
 			return commonOutDto;
 		}
 		
+		WxApiLog log = null;
+		
 		// 设置微信红包活动开关
 		String resJsonStr = null;
 		try {
 			String url = globalConfig.getSetlotteryswitchUrl() + "?access_token=" + inDto.getAccessToken()
 					+ "&lottery_id=" + lottery.getLotteryId() + "&onoff=" + inDto.getOnoff();
 			LOG.info("WxhbLotteryService.updateWxhbLotterySwitch设置微信红包活动开关request:{}", url);
+			log = this.createWxApiLog(WeChatApiConstant.SHAKEHAND_SET_LOTTERY_SWITCH.getApiName(), url);
+			this.saveOrUpdateWxApiLog(log);
 			resJsonStr = Request
 					.Get(url)
 					.execute().returnContent()
 					.asString(Charset.forName("utf-8"));
+			log.setRsp(resJsonStr);
+			this.saveOrUpdateWxApiLog(log);
 		} catch (UnsupportedCharsetException e) {
 			LOG.error("WxhbLotteryService.updateWxhbLotterySwitch设置微信红包活动开关异常", e);
 		} catch (ClientProtocolException e) {
@@ -467,7 +488,7 @@ public class WxhbLotteryService {
 	 */
 	public PageResult<WxhbLottery> queryWxhbLotteryByPage(WxhbLotteryQueryByPageInDto inDto){
 		PageResult<WxhbLottery> result = new PageResult<WxhbLottery>();
-		LotteryQueryVO query = new LotteryQueryVO();
+		WxLotteryQueryVO query = new WxLotteryQueryVO();
 		query.setTitle(inDto.getTitle());
 		query.setStatus(inDto.getStatus());
 		
@@ -527,5 +548,35 @@ public class WxhbLotteryService {
 		result.setRows(list);
 		
 		return result;
+	}
+	
+	/**
+	 * 根据红包活动ID，查询微信红包活动信息
+	 * @param czhbLotteryId
+	 * @return
+	 */
+	public WxhbLottery queryWxhbLotteryByCzhbLotteryId(int czhbLotteryId){
+		return wxhbLotteryMapper.queryWxhbLotteryByCzhbLotteryId(czhbLotteryId);
+	}
+
+	private WxApiLog createWxApiLog(String apiName, String req){
+		WxApiLog log = new WxApiLog();
+		log.setApiName(apiName);
+		log.setReq(req);
+		return log;
+	}
+	
+	/**
+	 * 记录调用微信接口LOG
+	 * @param log
+	 */
+	private void saveOrUpdateWxApiLog(WxApiLog log){
+		if (log.getId() > 0) {
+			// 更新
+			wxApiLogMapper.updateWxApiLog(log);
+		} else {
+			// 新增
+			wxApiLogMapper.saveWxApiLog(log);
+		}
 	}
 }

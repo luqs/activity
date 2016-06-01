@@ -46,3 +46,27 @@ function renderStatus(value,row,index){
 		return '未知';
 	}	
 }
+
+function rendorAmountType(value,row,index){
+	if (value == 'FIX') {
+		return '固定金额红包';
+	} else if (value == 'RANDOM') {
+		return '金额随机红包';
+	} else {
+		return value;
+	}
+}
+
+function renderProcessStatus(value,row,index){
+	if (value == '0') {
+		return '<font style="color:#BF3EFF;">初始化</font>';
+	} else if (value == '1') {
+		return '<font style="color:yellow;">处理中</font>';
+	} else if (value == '2') {
+		return '<font style="color:green;">处理成功</font>';
+	} else if (value == '3') {
+		return '<font style="color:red;">处理失败</font>';
+	} else {
+		return value;
+	}
+}

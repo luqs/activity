@@ -7,25 +7,30 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>微信红包活动维护</title>
 	<style type="text/css">
-		
+		.subMenu{
+			width:140px;
+			height:32px;
+			display:block;
+		}
 	</style>
 </head>
 <body class="easyui-layout">
 	<div data-options="region:'north'" style="height:50px;background:#B3DFDA;font-size:18px;line-height:48px;padding-left:30px;">
 		嗨摇微信红包活动后台管理
 	</div>
-	<div data-options="region:'south',split:true" style="height:50px;">
+	<!-- <div data-options="region:'south',split:true" style="height:50px;">
 		
-	</div>
+	</div> -->
 	
 	<div data-options="region:'west',split:true" title="管理中心" style="width:200px;">
 		<div class="easyui-accordion" data-options="fit:true,border:false">
-			<div title="红包预下单管理" style="padding:10px;">
-				<a href="javascript:void(0)" style="width:140px;height:32px" onclick="addTab('红包预下单列表', '${ctx}/pages/admin/preorder/list.jsp')">红包预下单列表</a>
+			<div title="嗨摇红包活动管理" style="padding:10px;">
+				<a href="javascript:void(0)" class="subMenu" onclick="addTab('嗨摇红包活动列表', '${ctx}/pages/admin/hiyolottery/list.jsp')">嗨摇红包活动</a>
 			</div>
-			<div title="红包活动管理" style="padding:10px;">
-				<a href="javascript:void(0)" style="width:140px;height:32px" onclick="addTab('红包活动列表', '${ctx}/pages/admin/lottery/list.jsp')">红包活动列表</a>
-			</div>
+			<div title="微信红包管理" style="padding:10px;">
+				<a href="javascript:void(0)" class="subMenu" onclick="addTab('微信红包预下单列表', '${ctx}/pages/admin/preorder/list.jsp')">微信红包预下单列表</a>
+				<a href="javascript:void(0)" class="subMenu" onclick="addTab('微信红包活动列表', '${ctx}/pages/admin/lottery/list.jsp')">微信红包活动列表</a>
+			</div>	
 		</div>
 	</div>
 	<div data-options="region:'center',title:'Main Title',iconCls:'icon-ok'">
