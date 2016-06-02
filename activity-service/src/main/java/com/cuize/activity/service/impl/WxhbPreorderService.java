@@ -129,20 +129,25 @@ public class WxhbPreorderService {
 		
 		// 微信红包预下单
 		// 参数（按参数名的ASCII码的升序排列）
-		
 		String utf8MchName = null;
 		String utf8Wishing = null;
 		String utf8Remark = null;
 		String utfActName = null;
-		try {
+		
+		// 不需要单独设置UTF编码，将POST的内容设置成UTF8字节即可
+/*		try {
 			utf8MchName = URLEncoder.encode(preorderDb.getMchName(), "UTF-8");
 			utf8Wishing = URLEncoder.encode(preorderDb.getWishing(), "UTF-8");
 			utf8Remark =  URLEncoder.encode(preorderDb.getRemark(), "UTF-8");
 			utfActName =  URLEncoder.encode(preorderDb.getActName(), "UTF-8");
 		} catch (UnsupportedEncodingException e2) {
 			LOG.error("WxhbPreorderService.preorder微信参数中文utf8编码异常", e2);
-		}
-		
+		}*/
+		utf8MchName = preorderDb.getMchName();
+		utf8Wishing = preorderDb.getWishing();
+		utf8Remark =  preorderDb.getRemark();
+		utfActName =  preorderDb.getActName();
+
 		SortedMap<String, String> wxParams = new TreeMap<String, String>();
 		wxParams.put("nonce_str", WXPayUtil.createNoncestr());
 		wxParams.put("mch_billno", preorderDb.getMchBillNo());

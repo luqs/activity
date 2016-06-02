@@ -156,11 +156,16 @@ public class WecatCaSecurityHttpUtil {
 
         //加入数据 
         httpsConn.setRequestMethod("POST"); 
+        httpsConn.setRequestProperty("Accept-Charset", "utf-8");
+        httpsConn.setRequestProperty("contentType", "utf-8");
+        
         httpsConn.setDoOutput(true); 
         DataOutputStream out = new DataOutputStream( 
         httpsConn.getOutputStream()); 
 
-        out.writeBytes(content);          
+        //out.writeBytes(content);  
+        // 务必设置编码，否则微信返回这样的信息：xx字段存在非UTF8字符
+        out.write(content.getBytes("UTF-8"));
         out.flush(); 
         out.close();
         

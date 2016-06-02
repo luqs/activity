@@ -122,7 +122,7 @@
 					</td>
 					<td>
 						<input id="probability" type="text"  class="easyui-numberbox"  style="width:200px;height:32px;"
-							value="1" data-options="suffix:'%'" readonly="readonly">
+							value="100" data-options="suffix:'%'" readonly="readonly">
 					</td>
 					<td class="tip">
 						概率 = 发放总人数/红包最大容量，当二者相等时，概率为100%
