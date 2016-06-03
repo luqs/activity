@@ -155,13 +155,13 @@ public class LotteryAutoProcessTask {
 			CommonOutDto preorderRes = wxhbPreorderService.preorder(inDto);
 			// 一个成功则成功
 			// TODO 后续完善异常类型，对于某些异常可以终止循环
-			if (preorderRes.getResultCode().equals("NOTENOUGH")) {
+			/*if (preorderRes.getResultCode().equals("NOTENOUGH")) {
 				// 帐号余额不足，请到商户平台充值后再重试
 				LOG.error("LotteryAutoCreateTask.process:红包预下单失败，跳出循环终止预下单，原因{}", preorderRes.getResultCode());
 				break;
-			} else {
+			} else {*/
 				result = result || preorderRes.isSuccess();
-			}
+			//}
 		}
 		
 		return result;

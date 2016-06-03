@@ -78,7 +78,7 @@ public class WxhbPreorderService {
 	@Autowired
 	private GlobalConfig globalConfig;
 	
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddmmhhss");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 	
 	/**
 	 * 微信红包预下单
