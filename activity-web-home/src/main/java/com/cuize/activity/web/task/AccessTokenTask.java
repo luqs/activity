@@ -4,10 +4,11 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.ActiveProfiles;
 
+import com.cuize.activity.service.dto.GlobalConfig;
 import com.cuize.activity.web.util.oauth.OAuthTokenRefresh;
 import com.cuize.activity.web.util.oauth.OAuthTokenUtil;
 
@@ -18,11 +19,13 @@ import com.cuize.activity.web.util.oauth.OAuthTokenUtil;
  * @author JackieLan
  *
  */
-@ActiveProfiles("prod")
 @Component
 public class AccessTokenTask {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AccessTokenTask.class);
+	
+	@Autowired
+	private GlobalConfig globalConfig;
 	
 	/**
      * 每一小时更新一次access_token
@@ -31,7 +34,14 @@ public class AccessTokenTask {
 	@PostConstruct
     public void refresh(){
 		LOG.info("AccessTokenTask.refresh:start");
-		OAuthTokenRefresh.refreshOAuthToken();
+		
+		String dsEnv = globalConfig.getDsEnv();
+		LOG.info("AccessTokenTask.refresh:dsEnv={}", dsEnv);
+		if (dsEnv != null && dsEnv.equals("prod")) {
+			OAuthTokenRefresh.refreshOAuthToken();
+		} else {
+			LOG.info("AccessTokenTask.refresh:不刷新token");
+		}
 		LOG.info("AccessTokenTask.refresh:access_token={}", OAuthTokenUtil.access_token);
 		LOG.info("AccessTokenTask.refresh:end");
 	}
